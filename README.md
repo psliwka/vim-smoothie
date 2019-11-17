@@ -5,6 +5,8 @@ This (neo)vim plugin makes scrolling nice and _smooth_. Find yourself
 completely lost every time you press `Ctrl-D` or `Ctrl-F`? You might want to
 give _vim-smoothie_ a try!
 
+![scrolling demo](demo.gif)
+
 Installation
 ------------
 
