@@ -14,6 +14,14 @@ if !exists('g:smoothie_base_speed')
   let g:smoothie_base_speed = 10
 endif
 
+if !exists('g:smoothie_break_on_reverse')
+  ""
+  " Stop immediately if we're moving and the user requested moving in opposite
+  " direction.  It's mostly useful at very low scrolling speeds, hence
+  " disabled by default.
+  let g:smoothie_break_on_reverse = 0
+endif
+
 ""
 " Execute {command}, but saving 'scroll' value before, and restoring it
 " afterwards.  Useful for some commands (such as ^D or ^U), which overwrite
@@ -149,8 +157,7 @@ endfunction
 " position).  If we're already moving, try to do the smart thing, taking into
 " account our progress in reaching the target set previously.
 function s:update_target(lines)
-  if s:target_displacement * a:lines < 0
-    " user requested moving in opposite direction, let's just stop
+  if g:smoothie_break_on_reverse && s:target_displacement * a:lines < 0
     call s:stop_moving()
   else
     let s:target_displacement += a:lines
