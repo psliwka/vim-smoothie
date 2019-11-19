@@ -199,3 +199,29 @@ endfunction
 function smoothie#backwards()
   call s:update_target(-winheight(0) * v:count1)
 endfunction
+
+""
+" Enable smoothie
+function smoothie#enable()
+  nnoremap <silent> <C-D>      :<C-U>call smoothie#downwards() <CR>
+  nnoremap <silent> <C-U>      :<C-U>call smoothie#upwards()   <CR>
+  nnoremap <silent> <C-F>      :<C-U>call smoothie#forwards()  <CR>
+  nnoremap <silent> <S-Down>   :<C-U>call smoothie#forwards()  <CR>
+  nnoremap <silent> <PageDown> :<C-U>call smoothie#forwards()  <CR>
+  nnoremap <silent> <C-B>      :<C-U>call smoothie#backwards() <CR>
+  nnoremap <silent> <S-Up>     :<C-U>call smoothie#backwards() <CR>
+  nnoremap <silent> <PageUp>   :<C-U>call smoothie#backwards() <CR>
+endfunction
+
+""
+" Disable smoothie
+function smoothie#disable()
+  unmap <C-D>
+  unmap <C-U>
+  unmap <C-F>
+  unmap <S-Down>
+  unmap <PageDown>
+  unmap <C-B>
+  unmap <S-Up>
+  unmap <PageUp>
+endfunction
