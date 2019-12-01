@@ -18,6 +18,18 @@ Install the plugin using your favorite plugin manager, for example [vim-plug]:
 Plug 'psliwka/vim-smoothie'
 ```
 
+Customization
+-------------
+
+_vim-smoothie_ aims for sane defaults, and should work out-of-the-box for most
+users. In some cases, however, you might want to customize its behavior, by
+dropping one or more of the following variables into your `vimrc`:
+
+* `g:smoothie_no_default_mappings`: If enabled, will prevent the plugin from
+  overriding default scrolling keys (`Ctrl-D` and friends). You are then
+  supposed to bind keys you like by yourself. See `plugin/smoothie.vim` to
+  discover available mappings.
+
 Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
 
