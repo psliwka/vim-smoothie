@@ -12,4 +12,4 @@ if get(g:, 'smoothie_use_default_mappings', v:true)
   silent! nmap <unique> <C-B>      <Plug>(SmoothieBackwards)
   silent! nmap <unique> <S-Up>     <Plug>(SmoothieBackwards)
   silent! nmap <unique> <PageUp>   <Plug>(SmoothieBackwards)
-en
+endif
