@@ -175,6 +175,20 @@ function s:count_to_scroll()
 endfunction
 
 ""
+" Helper function to figure out how many lines ^F and ^B should scroll,
+" taking the 'window' option into account like the native commands do
+function s:get_window_height()
+  " get number of lines visible on screen, even if 'wrap' option is set
+  let l:lines_to_scroll = line('w$') - line('w0') - 1
+
+  if winnr('$') == 1 && &window < &lines - 1
+    let l:lines_to_scroll = max([&window - 2, 1])
+  endif
+
+  return l:lines_to_scroll
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   call s:count_to_scroll()
@@ -191,11 +205,13 @@ endfunction
 ""
 " Smooth equivalent to ^F.
 function smoothie#forwards()
-  call s:update_target(winheight(0) * v:count1)
+  let l:winheight = s:get_window_height()
+  call s:update_target(l:winheight * v:count1)
 endfunction
 
 ""
 " Smooth equivalent to ^B.
 function smoothie#backwards()
-  call s:update_target(-winheight(0) * v:count1)
+  let l:winheight = s:get_window_height()
+  call s:update_target(-l:winheight * v:count1)
 endfunction
