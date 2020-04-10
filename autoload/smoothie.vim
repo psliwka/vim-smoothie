@@ -183,11 +183,10 @@ function s:get_window_height()
   let l:lines_to_scroll = winheight(0) - 2
 
   if &wrap
-    let l:wrapsave = &wrap
     let l:lines_wrapped = line('w$') - line('w0') - 1
     setl nowrap
     let l:lines_unwrapped = line('w$') - line('w0') - 1
-    let &wrap = l:wrapsave
+    setl wrap
 
     let l:number_of_visible_wrapping_lines = l:lines_unwrapped - l:lines_wrapped
     let l:lines_to_scroll -= l:number_of_visible_wrapping_lines
