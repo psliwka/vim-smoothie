@@ -178,8 +178,20 @@ endfunction
 " Helper function to figure out how many lines ^F and ^B should scroll,
 " taking the 'window' option into account like the native commands do
 function s:get_window_height()
-  " get number of lines visible on screen, even if 'wrap' option is set
-  let l:lines_to_scroll = line('w$') - line('w0') - 1
+  " get number of lines visible on screen, even if 'wrap' option is set and
+  " there are folds visible
+  let l:lines_to_scroll = winheight(0) - 2
+
+  if &wrap
+    let l:wrapsave = &wrap
+    let l:lines_wrapped = line('w$') - line('w0') - 1
+    setl nowrap
+    let l:lines_unwrapped = line('w$') - line('w0') - 1
+    let &wrap = l:wrapsave
+
+    let l:number_of_visible_wrapping_lines = l:lines_unwrapped - l:lines_wrapped
+    let l:lines_to_scroll -= l:number_of_visible_wrapping_lines
+  endif
 
   if winnr('$') == 1 && &window < &lines - 1
     let l:lines_to_scroll = max([&window - 2, 1])
