@@ -180,7 +180,10 @@ endfunction
 function s:get_window_height()
   let l:lines_to_scroll = winheight(0) - 2
 
-  if &wrap
+  if winnr('$') == 1 && &window < &lines - 1 " from :h 'window'
+    let l:lines_to_scroll = max([&window - 2, 1])
+
+  elseif &wrap
     let l:lines_wrapped = line('w$') - line('w0') - 1
     setl nowrap
     let l:lines_unwrapped = line('w$') - line('w0') - 1
@@ -188,10 +191,6 @@ function s:get_window_height()
 
     let l:number_of_lines_on_screen_that_wrap = l:lines_unwrapped - l:lines_wrapped
     let l:lines_to_scroll -= l:number_of_lines_on_screen_that_wrap
-  endif
-
-  if winnr('$') == 1 && &window < &lines - 1
-    let l:lines_to_scroll = max([&window - 2, 1])
   endif
 
   return l:lines_to_scroll
