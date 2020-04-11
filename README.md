@@ -66,7 +66,6 @@ replaces. That is, every command should still behave exactly as described in
 which hopefully will be addressed in the future:
 
 * `^D`, `^U`, `^F`, `^B` should beep when they can't move any further.
-* `^F` and `^B` should respect the `window` option.
 * Native commands may move in a smarter way over wrapped/folded lines.
 
 

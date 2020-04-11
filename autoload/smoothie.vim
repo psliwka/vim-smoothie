@@ -175,6 +175,28 @@ function s:count_to_scroll()
 endfunction
 
 ""
+" Helper function to figure out how many lines ^F and ^B should scroll, taking
+" the 'window' and 'wrap' options into account like the native commands do
+function s:get_window_height()
+  let l:lines_to_scroll = winheight(0) - 2
+
+  if winnr('$') == 1 && &window < &lines - 1 " from :h 'window'
+    let l:lines_to_scroll = max([&window - 2, 1])
+
+  elseif &wrap
+    let l:lines_wrapped = line('w$') - line('w0') - 1
+    setl nowrap
+    let l:lines_unwrapped = line('w$') - line('w0') - 1
+    setl wrap
+
+    let l:number_of_lines_on_screen_that_wrap = l:lines_unwrapped - l:lines_wrapped
+    let l:lines_to_scroll -= l:number_of_lines_on_screen_that_wrap
+  endif
+
+  return l:lines_to_scroll
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   call s:count_to_scroll()
@@ -191,11 +213,13 @@ endfunction
 ""
 " Smooth equivalent to ^F.
 function smoothie#forwards()
-  call s:update_target(winheight(0) * v:count1)
+  let l:winheight = s:get_window_height()
+  call s:update_target(l:winheight * v:count1)
 endfunction
 
 ""
 " Smooth equivalent to ^B.
 function smoothie#backwards()
-  call s:update_target(-winheight(0) * v:count1)
+  let l:winheight = s:get_window_height()
+  call s:update_target(-l:winheight * v:count1)
 endfunction
