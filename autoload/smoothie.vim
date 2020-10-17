@@ -49,6 +49,14 @@ endfunction
 " already at the bottom.  Return 1 if cannot move any lower.
 function s:step_down()
   if line('.') < line('$')
+    " NOTE: the three lines of code following this comment block
+    " have been implemented as a temporary workaround for a vim issue
+    " regarding Ctrl-D and folds.
+    "
+    " See: neovim/neovim#13080
+    if foldclosedend('.') != -1
+      call cursor(foldclosedend('.'), col('.'))
+    endif
     call s:execute_preserving_scroll("normal! 1\<C-D>")
     return 0
   else
