@@ -1,3 +1,5 @@
+let s:ctrl_f_invoked = v:false
+
 if !exists('g:smoothie_update_interval')
   ""
   " Time (in milliseconds) between subseqent screen/cursor postion updates.
@@ -48,7 +50,15 @@ endfunction
 " Scroll the window down by one line, or move the cursor down if the window is
 " already at the bottom.  Return 1 if cannot move any lower.
 function s:step_down()
+  if !(line('.') < line('$')) && !s:ctrl_f_invoked
+    " i.e. cursor is at last line of buffer, and movement is not Ctrl-F
+    " cannot move
+    return 1
+  endif
   if line('.') < line('$')
+    if s:ctrl_f_invoked && (winheight(0) - winline()) >= (line('$') - line('.'))
+      call s:execute_preserving_scroll("normal! \<C-E>")
+    endif
     " NOTE: the three lines of code following this comment block
     " have been implemented as a temporary workaround for a vim issue
     " regarding Ctrl-D and folds.
@@ -58,6 +68,9 @@ function s:step_down()
       call cursor(foldclosedend('.'), col('.'))
     endif
     call s:execute_preserving_scroll("normal! 1\<C-D>")
+    return 0
+  elseif s:ctrl_f_invoked && winline() > 1
+    call s:execute_preserving_scroll("normal! \<C-E>")
     return 0
   else
     return 1
@@ -185,6 +198,7 @@ endfunction
 ""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
+  let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(&scroll)
 endfunction
@@ -192,6 +206,7 @@ endfunction
 ""
 " Smooth equivalent to ^U.
 function smoothie#upwards()
+  let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(-&scroll)
 endfunction
@@ -199,11 +214,13 @@ endfunction
 ""
 " Smooth equivalent to ^F.
 function smoothie#forwards()
+  let s:ctrl_f_invoked = v:true
   call s:update_target(winheight(0) * v:count1)
 endfunction
 
 ""
 " Smooth equivalent to ^B.
 function smoothie#backwards()
+  let s:ctrl_f_invoked = v:false
   call s:update_target(-winheight(0) * v:count1)
 endfunction
