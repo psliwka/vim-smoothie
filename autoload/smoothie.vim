@@ -24,6 +24,14 @@ if !exists('g:smoothie_break_on_reverse')
   let g:smoothie_break_on_reverse = 0
 endif
 
+if !exists('g:smoothie_bell_enabled')
+  ""
+  " Enable beeping when either end of the buffer has been reached, and we
+  " cannot proceed any further
+  " disabled by default
+  let g:smoothie_bell_enabled = 0
+endif
+
 ""
 " Execute {command}, but saving 'scroll' value before, and restoring it
 " afterwards.  Useful for some commands (such as ^D or ^U), which overwrite
@@ -161,6 +169,13 @@ function s:movement_tick(_)
   if s:step_many(l:step_size)
     " we've collided with either buffer end
     call s:stop_moving()
+    if g:smoothie_bell_enabled
+      " bell
+      let l:belloff = &belloff
+      set belloff=
+      exe "normal \<Esc>"
+      exe 'set belloff=' . l:belloff
+    endif
   else
     let s:target_displacement -= l:step_size
     let s:subline_position = l:subline_step_size - l:step_size
