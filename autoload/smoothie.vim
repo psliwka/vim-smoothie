@@ -161,6 +161,13 @@ function s:movement_tick(_)
   if s:step_many(l:step_size)
     " we've collided with either buffer end
     call s:stop_moving()
+    if !(&belloff =~# 'all\|error')
+      " bell
+      let l:belloff = &belloff
+      set belloff=
+      exe "normal \<Esc>"
+      exe 'set belloff=' . l:belloff
+    endif
   else
     let s:target_displacement -= l:step_size
     let s:subline_position = l:subline_step_size - l:step_size
