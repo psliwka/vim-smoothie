@@ -4,6 +4,7 @@ if has('nvim') || has('patch-8.2.1978')
   noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()  <CR>
   noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards() <CR>
   noremap <silent> <Plug>(Smoothie_gg)       <cmd>call smoothie#gg()        <CR>
+  noremap <silent> <Plug>(Smoothie_G)        <cmd>call smoothie#G()         <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! map <unique> <C-D>      <Plug>(SmoothieDownwards)
@@ -15,6 +16,7 @@ if has('nvim') || has('patch-8.2.1978')
     silent! map <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! map <unique> <PageUp>   <Plug>(SmoothieBackwards)
     silent! map <unique> gg         <Plug>(Smoothie_gg)
+    silent! map <unique> G          <Plug>(Smoothie_G)
   endif
 else
   nnoremap <silent> <Plug>(SmoothieDownwards) :<C-U>call smoothie#downwards() <CR>
@@ -22,6 +24,7 @@ else
   nnoremap <silent> <Plug>(SmoothieForwards)  :<C-U>call smoothie#forwards()  <CR>
   nnoremap <silent> <Plug>(SmoothieBackwards) :<C-U>call smoothie#backwards() <CR>
   nnoremap <silent> <Plug>(Smoothie_gg)       :<C-U>call smoothie#gg()        <CR>
+  nnoremap <silent> <Plug>(Smoothie_G)        :<C-U>call smoothie#G()         <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! nmap <unique> <C-D>      <Plug>(SmoothieDownwards)
@@ -33,6 +36,7 @@ else
     silent! nmap <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! nmap <unique> <PageUp>   <Plug>(SmoothieBackwards)
     silent! nmap <unique> gg         <Plug>(Smoothie_gg)
+    silent! nmap <unique> G          <Plug>(Smoothie_G)
   endif
 endif
 
