@@ -6,6 +6,12 @@
 " invokes motion (except smoothie#forwards, where it must be set to v:true)
 let s:ctrl_f_invoked = v:false
 
+if !exists('g:smoothie_disabled')
+  ""
+  " Disable vim-smoothie.  Useful for very slow connections.
+  let g:smoothie_disabled = 0
+endif
+
 if !exists('g:smoothie_update_interval')
   ""
   " Time (in milliseconds) between subseqent screen/cursor postion updates.
@@ -221,6 +227,10 @@ endfunction
 ""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
+  if g:smoothie_disabled
+    exe "normal! \<C-d>"
+    return
+  endif
   let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(&scroll)
@@ -229,6 +239,10 @@ endfunction
 ""
 " Smooth equivalent to ^U.
 function smoothie#upwards()
+  if g:smoothie_disabled
+    exe "normal! \<C-u>"
+    return
+  endif
   let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(-&scroll)
@@ -237,6 +251,10 @@ endfunction
 ""
 " Smooth equivalent to ^F.
 function smoothie#forwards()
+  if g:smoothie_disabled
+    exe "normal! \<C-f>"
+    return
+  endif
   let s:ctrl_f_invoked = v:true
   call s:update_target(winheight(0) * v:count1)
 endfunction
@@ -244,6 +262,10 @@ endfunction
 ""
 " Smooth equivalent to ^B.
 function smoothie#backwards()
+  if g:smoothie_disabled
+    exe "normal! \<C-b>"
+    return
+  endif
   let s:ctrl_f_invoked = v:false
   call s:update_target(-winheight(0) * v:count1)
 endfunction
