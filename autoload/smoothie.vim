@@ -1,4 +1,10 @@
 ""
+" This variable is used to inform the s:step_*() functions about whether the
+" current movement is a cursor movement or a scroll movement.  Used for
+" motions like gg and G
+let s:cursor_movement = v:false
+
+""
 " This variable is needed to let the s:step_down() function know whether to
 " continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
 "
@@ -51,6 +57,10 @@ endfunction
 " already at the top.  Return 1 if cannot move any higher.
 function s:step_up()
   if line('.') > 1
+    if s:cursor_movement
+      exe 'normal! k'
+      return 0
+    endif
     call s:execute_preserving_scroll("normal! 1\<C-U>")
     return 0
   else
@@ -68,6 +78,10 @@ function s:step_down()
     return 1
   endif
   if line('.') < line('$')
+    if s:cursor_movement
+      exe 'normal! j'
+      return 0
+    endif
     " NOTE: the three lines of code following this comment block
     " have been implemented as a temporary workaround for a vim issue
     " regarding Ctrl-D and folds.
@@ -262,6 +276,37 @@ function smoothie#backwards()
   endif
   let s:ctrl_f_invoked = v:false
   call s:update_target(-winheight(0) * v:count1)
+endfunction
+
+" Smoothie equivalent to gg.
+function smoothie#gg()
+  let s:cursor_movement = v:true
+  let s:ctrl_f_invoked = v:false
+  if !g:smoothie_enabled || mode(1) =~# 'o' && mode(1) =~? 'no'
+    " If in operator pending mode, disable vim-smoothie and force the movement
+    " to be line-wise, because gg was originally linewise.
+    " Uses the normal non-smooth version of gg.
+    exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'gg'
+    return
+  endif
+  " gg behaves like a jump-command
+  " so, append current position to the jumplist
+  " but before that, save v:count into a variable
+  let l:target = v:count1
+  let l:target = (l:target > line('$') ? line('$') : l:target)
+  execute "normal! m'"
+  call s:update_target(l:target - line('.'))
+  " suspend further commands till the destination is reached
+  " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
+  while line('.') != l:target
+    exe 'sleep ' . g:smoothie_update_interval . ' m'
+  endwhile
+  " reset s:cursor_movement to false
+  let s:cursor_movement = v:false
+  " :help 'startofline'
+  if &startofline
+    call cursor(line('.'), 1)
+  endif
 endfunction
 
 " vim: et ts=2
