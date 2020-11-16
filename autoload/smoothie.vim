@@ -1,3 +1,16 @@
+if exists('g:loaded_smoothie')
+  finish
+endif
+let g:loaded_smoothie = 1
+
+if !has('float') || !has('timers')
+  let g:smoothie_disabled = 1
+  echohl WarningMsg
+  echom 'vim-smoothie needs +timers and +float'
+  echohl None
+  finish
+endif
+
 ""
 " This variable is used to inform the s:step_*() functions about whether the
 " current movement is a cursor movement or a scroll movement.  Used for
