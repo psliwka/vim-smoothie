@@ -48,8 +48,16 @@ endif
 " 'scroll' permanently if used with a [count].
 function s:execute_preserving_scroll(command)
   let l:saved_scroll = &scroll
+  let l:saved_scrolloff = 0
+  if &scrolloff
+    let l:saved_scrolloff = &scrolloff
+    let &scrolloff = 0
+  endif
   execute a:command
   let &scroll = l:saved_scroll
+  if l:saved_scrolloff
+    let &scrolloff = l:saved_scrolloff
+  endif
 endfunction
 
 ""
