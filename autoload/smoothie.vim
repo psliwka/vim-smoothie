@@ -335,4 +335,34 @@ function smoothie#gg()
   endif
 endfunction
 
+" Smoothie equivalent to G.
+function smoothie#G()
+  let s:cursor_movement = v:true
+  let s:ctrl_f_invoked = v:false
+  if g:smoothie_disabled || mode(1) =~# 'o' && mode(1) =~? 'no'
+    " If in operator pending mode, disable vim-smoothie and force the movement
+    " to be line-wise, because G was originally linewise.
+    " Uses the normal non-smooth version of G.
+    exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'G'
+    return
+  endif
+  " G behaves like a jump-command
+  " so, append current position to the jumplist
+  " but before that, save v:count into a variable
+  let l:target = (v:count ? v:count : line('$'))
+  execute "normal! m'"
+  call s:update_target(l:target - line('.'))
+  " suspend further commands till the destination is reached
+  " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
+  while line('.') != l:target
+    exe 'sleep ' . g:smoothie_update_interval . ' m'
+  endwhile
+  " reset s:cursor_movement to false
+  let s:cursor_movement = v:false
+  " :help 'startofline'
+  if &startofline
+    call cursor(line('.'), 1)
+  endif
+endfunction
+
 " vim: et ts=2
