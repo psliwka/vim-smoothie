@@ -1,4 +1,4 @@
-if has('nvim') || has("patch-8.2.1280")
+if has('nvim') || has('patch-8.2.1280')
   noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards() <CR>
   noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()   <CR>
   noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()  <CR>
