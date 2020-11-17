@@ -15,8 +15,6 @@ if has('nvim') || has('patch-8.2.1280')
     silent! map <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! map <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! map <unique> <PageUp>   <Plug>(SmoothieBackwards)
-    silent! map <unique> gg         <Plug>(Smoothie_gg)
-    silent! map <unique> G          <Plug>(Smoothie_G)
   endif
 else
   nnoremap <silent> <Plug>(SmoothieDownwards) :<C-U>call smoothie#downwards() <CR>
@@ -35,8 +33,6 @@ else
     silent! nmap <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! nmap <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! nmap <unique> <PageUp>   <Plug>(SmoothieBackwards)
-    silent! nmap <unique> gg         <Plug>(Smoothie_gg)
-    silent! nmap <unique> G          <Plug>(Smoothie_G)
   endif
 endif
 
