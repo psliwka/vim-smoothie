@@ -218,6 +218,12 @@ function s:update_target(lines)
   if g:smoothie_break_on_reverse && s:target_displacement * a:lines < 0
     call s:stop_moving()
   else
+    " Cursor movements are very delicate. Since the displacement for cursor
+    " movements is calulated from the "current" line, so immediately stop
+    " moving, otherwise we will end up at the wrong line.
+    if s:cursor_movement
+      call s:stop_moving()
+    endif
     let s:target_displacement += a:lines
     call s:start_moving()
   endif
@@ -305,7 +311,7 @@ function smoothie#gg()
   let s:cursor_movement = v:false
   " :help 'startofline'
   if &startofline
-    call cursor(line('.'), 1)
+    call cursor(line('.'), match(getline('.'),'\S')+1)
   endif
 endfunction
 
@@ -336,7 +342,7 @@ function smoothie#G()
   let s:cursor_movement = v:false
   " :help 'startofline'
   if &startofline
-    call cursor(line('.'), 1)
+    call cursor(line('.'), match(getline('.'),'\S')+1)
   endif
 endfunction
 
