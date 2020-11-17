@@ -195,7 +195,11 @@ endfunction
 " TODO: current algorithm is rather crude, would be good to research better
 " alternatives.
 function s:compute_velocity()
-  return g:smoothie_base_speed * (s:target_displacement + s:subline_position)
+  " return g:smoothie_base_speed * (s:target_displacement + s:subline_position)
+  let l:foo = g:smoothie_base_speed * (s:target_displacement + s:subline_position)
+  let l:abs = abs(l:foo)
+  let l:sgn = l:foo / l:abs
+  return pow(l:abs,0.9)*l:sgn
 endfunction
 
 ""
