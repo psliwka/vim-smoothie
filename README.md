@@ -1,4 +1,4 @@
-vim-smoothie: Smooth scrolling for Vim done right🥤
+vim-smoothie: Smooth scrolling for Vim done right :cup_with_straw:
 ===================================================
 
 This (neo)vim plugin makes scrolling nice and _smooth_. Find yourself
@@ -29,6 +29,23 @@ adjusting one or more of the following variables in your `vimrc`:
   overriding default scrolling keys (`Ctrl-D` and friends). You are then
   supposed to bind keys you like by yourself. See `plugin/smoothie.vim` to
   discover available mappings.
+
+* `g:smoothie_disabled`: Disable vim-smoothie. Useful for extremely slow
+  connections.
+
+* `g:smoothie_base_speed`: Controls the speed. Set to `10` by default. To
+  go slower, reduce the value. To go faster, increase the value.
+
+* `g:smoothie_update_interval`: Time interval (in milliseconds) between
+  successive screen updates. Use a smaller value to get smoother
+  animations, or use a bigger value if you are on a slow connection.
+
+* `g:smoothie_break_on_reverse`: If true, then scrolling will stop
+  immediately when a command is given to scroll opposite to the current
+  direction.
+
+* `g:smoothie_bell_enabled`: If true, then a bell will be rang if the
+  scroll commmand being issued is invalid (i.e. we have reached boundary)
 
 Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
