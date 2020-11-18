@@ -1,4 +1,4 @@
-vim-smoothie: Smooth scrolling for Vim done right🥤
+vim-smoothie: Smooth scrolling for Vim done right :cup_with_straw:
 ===================================================
 
 This (neo)vim plugin makes scrolling nice and _smooth_. Find yourself
@@ -32,6 +32,20 @@ adjusting one or more of the following variables in your `vimrc`:
 * `g:smoothie_experimental_mappings`: Set this to true to enable additional,
   experimental mappings (currently `gg` and `G`). It is not recommended to
   enable them unless you're ready to fight potential bugs.
+
+* `g:smoothie_enabled`: Set it to `0` to disable vim-smoothie. Useful for
+  extremely slow connections.
+
+* `g:smoothie_base_speed`: Controls the speed. Set to `10` by default. To
+  go slower, reduce the value. To go faster, increase the value.
+
+* `g:smoothie_update_interval`: Time interval (in milliseconds) between
+  successive screen updates. Use a smaller value to get smoother
+  animations, or use a bigger value if you are on a slow connection.
+
+* `g:smoothie_break_on_reverse`: If true, then scrolling will stop
+  immediately when a command is given to scroll opposite to the current
+  direction.
 
 Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
@@ -71,7 +85,6 @@ replaces. That is, every command should still behave exactly as described in
 `:help scroll.txt`. There are still some deviations from the origial behavior,
 which hopefully will be addressed in the future:
 
-* `^D`, `^U`, `^F`, `^B` should beep when they can't move any further.
 * `^F` and `^B` should respect the `window` option.
 * Native commands may move in a smarter way over wrapped/folded lines.
 
