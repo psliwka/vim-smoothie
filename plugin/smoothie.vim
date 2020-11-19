@@ -1,3 +1,11 @@
+if !has('float') || !has('timers')
+  let g:smoothie_enabled = 0
+  echohl WarningMsg
+  echom 'vim-smoothie needs +timers and +float'
+  echohl None
+  finish
+endif
+
 if has('nvim') || has('patch-8.2.1978')
   noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards() <CR>
   noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()   <CR>
