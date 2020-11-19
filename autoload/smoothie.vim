@@ -80,11 +80,8 @@ endfunction
 " Scroll the window down by one line, or move the cursor down if the window is
 " already at the bottom.  Return 1 if cannot move any lower.
 function s:step_down()
-  if !(line('.') < line('$')) && !s:ctrl_f_invoked
-    " cursor is at last line of buffer, and movement is not Ctrl-F
-    " cannot move
-    return 1
-  endif
+  let l:initial_winline = winline()
+
   if line('.') < line('$')
     if s:cursor_movement
       exe 'normal! j'
@@ -99,17 +96,19 @@ function s:step_down()
       call cursor(foldclosedend('.'), col('.'))
     endif
     call s:execute_preserving_scroll("normal! 1\<C-D>")
-    if s:ctrl_f_invoked && (winheight(0) - winline()) >= (line('$') - line('.'))
-      " ^F is pressed, and the last line of the buffer is visible
+    if s:ctrl_f_invoked && winline() > l:initial_winline
+      " ^F is pressed, and the last motion caused cursor postion to change
       " scroll window to keep cursor position fixed
       call s:execute_preserving_scroll("normal! \<C-E>")
     endif
     return 0
+
   elseif s:ctrl_f_invoked && winline() > 1
     " cursor is already on last line of buffer, but not on last line of window
     " ^F can scroll more
     call s:execute_preserving_scroll("normal! \<C-E>")
     return 0
+
   else
     return 1
   endif
@@ -152,6 +151,10 @@ let s:subline_position = 0.0
 " Start the animation timer if not already running.  Should be called when
 " updating the target, when there's a chance we're not already moving.
 function s:start_moving()
+  if ((s:target_displacement < 0) ? line('.') == 1 : (line('.') == line('$') && (s:ctrl_f_invoked ? winline() == 1 : v:true)))
+    " Invalid command
+    call s:ring_bell()
+  endif
   if !exists('s:timer_id')
     let s:timer_id = timer_start(g:smoothie_update_interval, function('s:movement_tick'), {'repeat': -1})
   endif
@@ -203,13 +206,6 @@ function s:movement_tick(_)
   if s:step_many(l:step_size)
     " we've collided with either buffer end
     call s:stop_moving()
-    if !(&belloff =~# 'all\|error')
-      " bell
-      let l:belloff = &belloff
-      set belloff=
-      exe "normal \<Esc>"
-      exe 'set belloff=' . l:belloff
-    endif
   else
     let s:target_displacement -= l:step_size
     let s:subline_position = l:subline_step_size - l:step_size
@@ -278,6 +274,17 @@ function s:count_to_scroll()
 endfunction
 
 ""
+" Helper function to ring bell.
+function s:ring_bell()
+  if !(&belloff =~# 'all\|error')
+    let l:belloff = &belloff
+    set belloff=
+    exe "normal \<Esc>"
+    let &belloff = l:belloff
+  endif
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   if !g:smoothie_enabled
@@ -323,6 +330,7 @@ function smoothie#backwards()
   call s:update_target(-winheight(0) * v:count1)
 endfunction
 
+""
 " Smoothie equivalent to gg.
 function smoothie#gg()
   let s:cursor_movement = v:true
@@ -334,9 +342,8 @@ function smoothie#gg()
     exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'gg'
     return
   endif
-  " gg behaves like a jump-command
-  " so, append current position to the jumplist
-  " but before that, save v:count into a variable
+  " gg behaves like a jump-command so, append current position to the jumplist
+  " but before that, set the target, because v:count and v:count1 will be lost
   let l:target = v:count1
   let l:target = (l:target > line('$') ? line('$') : l:target)
   let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
@@ -351,28 +358,23 @@ function smoothie#gg()
   while line('.') != l:target
     exe 'sleep ' . g:smoothie_update_interval . ' m'
   endwhile
-  " reset s:cursor_movement to false
-  let s:cursor_movement = v:false
-  " :help 'startofline'
-  if &startofline
+  let s:cursor_movement = v:false   " reset s:cursor_movement to false
+  if &startofline                   " :help 'startofline'
     call cursor(line('.'), match(getline('.'),'\S')+1)
   endif
 endfunction
 
+""
 " Smoothie equivalent to G.
 function smoothie#G()
+  " absolutely similar to smoothie#gg()
+  " refer to that for explanation of steps
   let s:cursor_movement = v:true
   let s:ctrl_f_invoked = v:false
   if !g:smoothie_enabled || mode(1) =~# 'o' && mode(1) =~? 'no'
-    " If in operator pending mode, disable vim-smoothie and force the movement
-    " to be line-wise, because G was originally linewise.
-    " Uses the normal non-smooth version of G.
     exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'G'
     return
   endif
-  " G behaves like a jump-command
-  " so, append current position to the jumplist
-  " but before that, save v:count into a variable
   let l:target = (v:count ? v:count : line('$'))
   let l:target = (l:target > line('$') ? line('$') : l:target)
   let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
@@ -382,14 +384,10 @@ function smoothie#G()
   endif
   execute "normal! m'"
   call s:update_target(s:calculate_screen_lines(line('.'), l:target))
-  " suspend further commands till the destination is reached
-  " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
   while line('.') != l:target
     exe 'sleep ' . g:smoothie_update_interval . ' m'
   endwhile
-  " reset s:cursor_movement to false
   let s:cursor_movement = v:false
-  " :help 'startofline'
   if &startofline
     call cursor(line('.'), match(getline('.'),'\S')+1)
   endif
