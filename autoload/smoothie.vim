@@ -1,6 +1,6 @@
 ""
-" This variable is needed to let the s:movement_tick(_) function know whether
-" to continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
+" This variable is needed to let the s:step_down() function know whether to
+" continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
 "
 " NOTE: This variable "MUST" be set to v:false in "every" function that
 " invokes motion (except smoothie#forwards, where it must be set to v:true)
@@ -68,10 +68,6 @@ function s:step_down()
     return 1
   endif
   if line('.') < line('$')
-    if s:ctrl_f_invoked && (winheight(0) - winline()) >= (line('$') - line('.'))
-      " ^F is pressed, and the last line of the buffer is visible
-      call s:execute_preserving_scroll("normal! \<C-E>")
-    endif
     " NOTE: the three lines of code following this comment block
     " have been implemented as a temporary workaround for a vim issue
     " regarding Ctrl-D and folds.
@@ -81,6 +77,11 @@ function s:step_down()
       call cursor(foldclosedend('.'), col('.'))
     endif
     call s:execute_preserving_scroll("normal! 1\<C-D>")
+    if s:ctrl_f_invoked && (winheight(0) - winline()) >= (line('$') - line('.'))
+      " ^F is pressed, and the last line of the buffer is visible
+      " scroll window to keep cursor position fixed
+      call s:execute_preserving_scroll("normal! \<C-E>")
+    endif
     return 0
   elseif s:ctrl_f_invoked && winline() > 1
     " cursor is already on last line of buffer, but not on last line of window
