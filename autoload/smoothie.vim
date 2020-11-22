@@ -1,3 +1,17 @@
+""
+" This variable is needed to let the s:step_down() function know whether to
+" continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
+"
+" NOTE: This variable "MUST" be set to v:false in "every" function that
+" invokes motion (except smoothie#forwards, where it must be set to v:true)
+let s:ctrl_f_invoked = v:false
+
+if !exists('g:smoothie_enabled')
+  ""
+  " Set it to 0 to disable vim-smoothie.  Useful for very slow connections.
+  let g:smoothie_enabled = 1
+endif
+
 if !exists('g:smoothie_update_interval')
   ""
   " Time (in milliseconds) between subseqent screen/cursor postion updates.
@@ -48,8 +62,31 @@ endfunction
 " Scroll the window down by one line, or move the cursor down if the window is
 " already at the bottom.  Return 1 if cannot move any lower.
 function s:step_down()
+  if !(line('.') < line('$')) && !s:ctrl_f_invoked
+    " cursor is at last line of buffer, and movement is not Ctrl-F
+    " cannot move
+    return 1
+  endif
   if line('.') < line('$')
+    " NOTE: the three lines of code following this comment block
+    " have been implemented as a temporary workaround for a vim issue
+    " regarding Ctrl-D and folds.
+    "
+    " See: neovim/neovim#13080
+    if foldclosedend('.') != -1
+      call cursor(foldclosedend('.'), col('.'))
+    endif
     call s:execute_preserving_scroll("normal! 1\<C-D>")
+    if s:ctrl_f_invoked && (winheight(0) - winline()) >= (line('$') - line('.'))
+      " ^F is pressed, and the last line of the buffer is visible
+      " scroll window to keep cursor position fixed
+      call s:execute_preserving_scroll("normal! \<C-E>")
+    endif
+    return 0
+  elseif s:ctrl_f_invoked && winline() > 1
+    " cursor is already on last line of buffer, but not on last line of window
+    " ^F can scroll more
+    call s:execute_preserving_scroll("normal! \<C-E>")
     return 0
   else
     return 1
@@ -94,7 +131,7 @@ let s:subline_position = 0.0
 " updating the target, when there's a chance we're not already moving.
 function s:start_moving()
   if !exists('s:timer_id')
-    let s:timer_id = timer_start(g:smoothie_update_interval, function("s:movement_tick"), {'repeat': -1})
+    let s:timer_id = timer_start(g:smoothie_update_interval, function('s:movement_tick'), {'repeat': -1})
   endif
 endfunction
 
@@ -140,6 +177,13 @@ function s:movement_tick(_)
   if s:step_many(l:step_size)
     " we've collided with either buffer end
     call s:stop_moving()
+    if !(&belloff =~# 'all\|error')
+      " bell
+      let l:belloff = &belloff
+      set belloff=
+      exe "normal \<Esc>"
+      exe 'set belloff=' . l:belloff
+    endif
   else
     let s:target_displacement -= l:step_size
     let s:subline_position = l:subline_step_size - l:step_size
@@ -177,6 +221,11 @@ endfunction
 ""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
+  if !g:smoothie_enabled
+    exe "normal! \<C-d>"
+    return
+  endif
+  let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(&scroll)
 endfunction
@@ -184,6 +233,11 @@ endfunction
 ""
 " Smooth equivalent to ^U.
 function smoothie#upwards()
+  if !g:smoothie_enabled
+    exe "normal! \<C-u>"
+    return
+  endif
+  let s:ctrl_f_invoked = v:false
   call s:count_to_scroll()
   call s:update_target(-&scroll)
 endfunction
@@ -191,11 +245,23 @@ endfunction
 ""
 " Smooth equivalent to ^F.
 function smoothie#forwards()
+  if !g:smoothie_enabled
+    exe "normal! \<C-f>"
+    return
+  endif
+  let s:ctrl_f_invoked = v:true
   call s:update_target(winheight(0) * v:count1)
 endfunction
 
 ""
 " Smooth equivalent to ^B.
 function smoothie#backwards()
+  if !g:smoothie_enabled
+    exe "normal! \<C-b>"
+    return
+  endif
+  let s:ctrl_f_invoked = v:false
   call s:update_target(-winheight(0) * v:count1)
 endfunction
+
+" vim: et ts=2
