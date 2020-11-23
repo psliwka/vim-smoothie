@@ -230,6 +230,33 @@ function s:update_target(lines)
 endfunction
 
 ""
+" Helper function to calculate the actual number of screen lines from a line
+" to another.  Useful for properly handling folds in case of cursor movements.
+function s:calculate_screen_lines(from, to)
+  let l:from = a:from
+  let l:to = a:to
+  let l:from = (foldclosed(l:from) != -1 ? foldclosed(l:from) : l:from)
+  let l:to = (foldclosed(l:to) != -1 ? foldclosed(l:to) : l:to)
+  if l:from == l:to
+    return 0
+  endif
+  let l:lines = 0
+  let l:linenr = l:from
+  while l:linenr != l:to
+    if l:linenr < l:to
+      let l:lines +=1
+      let l:linenr = (foldclosedend(l:linenr) != -1 ? foldclosedend(l:linenr) : l:linenr)
+      let l:linenr += 1
+    elseif l:linenr > l:to
+      let l:lines -= 1
+      let l:linenr = (foldclosed(l:linenr) != -1 ? foldclosed(l:linenr) : l:linenr)
+      let l:linenr -= 1
+    endif
+  endwhile
+  return l:lines
+endfunction
+
+""
 " Helper function to set 'scroll' to [count], similarly to what native ^U and
 " ^D commands do.
 function s:count_to_scroll()
@@ -300,8 +327,13 @@ function smoothie#gg()
   " but before that, save v:count into a variable
   let l:target = v:count1
   let l:target = (l:target > line('$') ? line('$') : l:target)
+  let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
+  if foldclosed('.') == l:target
+    let s:cursor_movement = v:false
+    return
+  endif
   execute "normal! m'"
-  call s:update_target(l:target - line('.'))
+  call s:update_target(s:calculate_screen_lines(line('.'), l:target))
   " suspend further commands till the destination is reached
   " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
   while line('.') != l:target
@@ -331,8 +363,13 @@ function smoothie#G()
   " but before that, save v:count into a variable
   let l:target = (v:count ? v:count : line('$'))
   let l:target = (l:target > line('$') ? line('$') : l:target)
+  let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
+  if foldclosed('.') == l:target
+    let s:cursor_movement = v:false
+    return
+  endif
   execute "normal! m'"
-  call s:update_target(l:target - line('.'))
+  call s:update_target(s:calculate_screen_lines(line('.'), l:target))
   " suspend further commands till the destination is reached
   " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
   while line('.') != l:target
