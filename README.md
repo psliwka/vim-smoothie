@@ -29,6 +29,9 @@ adjusting one or more of the following variables in your `vimrc`:
   overriding default scrolling keys (`Ctrl-D` and friends). You are then
   supposed to bind keys you like by yourself. See `plugin/smoothie.vim` to
   discover available mappings.
+* `g:smoothie_experimental_mappings`: Set this to true to enable additional,
+  experimental mappings (currently `gg` and `G`). It is not recommended to
+  enable them unless you're ready to fight potential bugs.
 
 Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
@@ -48,7 +51,7 @@ popular smooth scrolling plugins I've used in the past: [sexy_scroller.vim],
 
 |  | vim-smoothie | [sexy_scroller.vim] | [comfortable-motion.vim] | [vim-smooth-scroll] |
 |---|:---:|:---:|:---:|:---:|
-| Supported commands | `^D` `^U` `^F` `^B` | A lot❤️ | `^D` `^U` `^F` `^B` | `^D` `^U` `^F` `^B` |
+| Supported commands | `^D` `^U` `^F` `^B` `gg`<sup>1</sup> `G`<sup>1</sup> | A lot❤️ | `^D` `^U` `^F` `^B` | `^D` `^U` `^F` `^B` |
 | Erratic screen jumps and jittering now and then | Nope | A lot💔 | Nope | Nope |
 | Scrolling distance is proportional to window height | ✅ | ✅ | ❌ | ✅ |
 | Easing out (soft-stop) | ✅ | ✅ | ✅ | ❌ |
@@ -56,6 +59,9 @@ popular smooth scrolling plugins I've used in the past: [sexy_scroller.vim],
 | Respects `scroll` and `startofline` options | ✅ | ✅ | ❌ | ❌ |
 | `^D` and `^U` behave correctly near buffer ends, just moving the cursor instead of scrolling the window | ✅ | ✅ | ❌ | ❌ |
 | Pun in name | ✅ | ✅ | ❌ | ❌ |
+
+Notes:
+1. these commands are experimental and disabled by default
 
 Known issues/incompatibilities
 ------------------------------
