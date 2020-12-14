@@ -331,27 +331,56 @@ function smoothie#backwards()
 endfunction
 
 ""
-" Smoothie equivalent to gg.
-function smoothie#gg()
+" Smoothie equivalent for G and gg
+" NOTE: I have also added - movement to dempnstrate how to add more new
+"       movements in the future
+function smoothie#cursor_movement(movement)
+  let l:movements = {
+        \'gg': {
+                \'target_expr':   'v:count1',
+                \'startofline':   &startofline,
+                \'jump_commmand': v:true,
+                \},
+        \'G' :  {
+                \'target_expr':   "(v:count ? v:count : line('$'))",
+                \'startofline':   &startofline,
+                \'jump_commmand': v:true,
+                \},
+        \'-' :  {
+                \'target_expr':   "line('.') - v:count1",
+                \'startofline':   v:true,
+                \'jump_commmand': v:false,
+                \},
+        \}
+  if !has_key(l:movements, a:movement)
+    return 1
+  endif
+  call s:do_vertical_cursor_movement(a:movement, l:movements[a:movement])
+endfunction
+
+""
+" Helper function to preform cursor movements
+function s:do_vertical_cursor_movement(movement, properties)
   let s:cursor_movement = v:true
   let s:ctrl_f_invoked = v:false
+  " If in operator pending mode, disable vim-smoothie and use the normal
+  " non-smoothie version of the movement
   if !g:smoothie_enabled || mode(1) =~# 'o' && mode(1) =~? 'no'
-    " If in operator pending mode, disable vim-smoothie and force the movement
-    " to be line-wise, because gg was originally linewise.
-    " Uses the normal non-smooth version of gg.
-    exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'gg'
+    " If in operator-pending mode, prefer the movement to be linewise
+    exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . a:movement
     return
   endif
-  " gg behaves like a jump-command so, append current position to the jumplist
-  " but before that, set the target, because v:count and v:count1 will be lost
-  let l:target = v:count1
+  let l:target = eval(a:properties['target_expr'])
   let l:target = (l:target > line('$') ? line('$') : l:target)
   let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
   if foldclosed('.') == l:target
     let s:cursor_movement = v:false
     return
   endif
-  execute "normal! m'"
+  " if this is a jump command, append current position to the jumplist
+  if a:properties['jump_commmand']
+    execute "normal! m'"
+  endif
   call s:update_target(s:calculate_screen_lines(line('.'), l:target))
   " suspend further commands till the destination is reached
   " see point (3) of https://github.com/psliwka/vim-smoothie/issues/1#issuecomment-560158642
@@ -359,36 +388,8 @@ function smoothie#gg()
     exe 'sleep ' . g:smoothie_update_interval . ' m'
   endwhile
   let s:cursor_movement = v:false   " reset s:cursor_movement to false
-  if &startofline                   " :help 'startofline'
-    call cursor(line('.'), match(getline('.'),'\S')+1)
-  endif
-endfunction
-
-""
-" Smoothie equivalent to G.
-function smoothie#G()
-  " absolutely similar to smoothie#gg()
-  " refer to that for explanation of steps
-  let s:cursor_movement = v:true
-  let s:ctrl_f_invoked = v:false
-  if !g:smoothie_enabled || mode(1) =~# 'o' && mode(1) =~? 'no'
-    exe 'normal! ' . (mode(1) ==# 'no' ? 'V' : '') . v:count . 'G'
-    return
-  endif
-  let l:target = (v:count ? v:count : line('$'))
-  let l:target = (l:target > line('$') ? line('$') : l:target)
-  let l:target = (foldclosed(l:target) != -1 ? foldclosed(l:target) : l:target)
-  if foldclosed('.') == l:target
-    let s:cursor_movement = v:false
-    return
-  endif
-  execute "normal! m'"
-  call s:update_target(s:calculate_screen_lines(line('.'), l:target))
-  while line('.') != l:target
-    exe 'sleep ' . g:smoothie_update_interval . ' m'
-  endwhile
-  let s:cursor_movement = v:false
-  if &startofline
+  if a:properties['startofline']
+    " move cursor to the first non-blank character of the line
     call cursor(line('.'), match(getline('.'),'\S')+1)
   endif
 endfunction

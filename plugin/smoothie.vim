@@ -7,12 +7,12 @@ if !has('float') || !has('timers')
 endif
 
 if has('nvim') || has('patch-8.2.1978')
-  noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards() <CR>
-  noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()   <CR>
-  noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()  <CR>
-  noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards() <CR>
-  noremap <silent> <Plug>(Smoothie_gg)       <cmd>call smoothie#gg()        <CR>
-  noremap <silent> <Plug>(Smoothie_G)        <cmd>call smoothie#G()         <CR>
+  noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards()           <CR>
+  noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()             <CR>
+  noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()            <CR>
+  noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards()           <CR>
+  noremap <silent> <Plug>(Smoothie_gg)       <cmd>call smoothie#cursor_movement('gg') <CR>
+  noremap <silent> <Plug>(Smoothie_G)        <cmd>call smoothie#cursor_movement('G')  <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! map <unique> <C-D>      <Plug>(SmoothieDownwards)
@@ -29,12 +29,12 @@ if has('nvim') || has('patch-8.2.1978')
     endif
   endif
 else
-  nnoremap <silent> <Plug>(SmoothieDownwards) :<C-U>call smoothie#downwards() <CR>
-  nnoremap <silent> <Plug>(SmoothieUpwards)   :<C-U>call smoothie#upwards()   <CR>
-  nnoremap <silent> <Plug>(SmoothieForwards)  :<C-U>call smoothie#forwards()  <CR>
-  nnoremap <silent> <Plug>(SmoothieBackwards) :<C-U>call smoothie#backwards() <CR>
-  nnoremap <silent> <Plug>(Smoothie_gg)       :<C-U>call smoothie#gg()        <CR>
-  nnoremap <silent> <Plug>(Smoothie_G)        :<C-U>call smoothie#G()         <CR>
+  nnoremap <silent> <Plug>(SmoothieDownwards) :<C-U>call smoothie#downwards()           <CR>
+  nnoremap <silent> <Plug>(SmoothieUpwards)   :<C-U>call smoothie#upwards()             <CR>
+  nnoremap <silent> <Plug>(SmoothieForwards)  :<C-U>call smoothie#forwards()            <CR>
+  nnoremap <silent> <Plug>(SmoothieBackwards) :<C-U>call smoothie#backwards()           <CR>
+  nnoremap <silent> <Plug>(Smoothie_gg)       :<C-U>call smoothie#cursor_movement('gg') <CR>
+  nnoremap <silent> <Plug>(Smoothie_G)        :<C-U>call smoothie#cursor_movement('G')  <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! nmap <unique> <C-D>      <Plug>(SmoothieDownwards)
