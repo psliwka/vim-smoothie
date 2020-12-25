@@ -79,7 +79,9 @@ which hopefully will be addressed in the future:
 Credits
 -------
 
-Created by [Piotr Śliwka](https://github.com/psliwka).
+Created by [Piotr Śliwka](https://github.com/psliwka). Improved by
+[Klas Segeljakt](https://github.com/segeljakt) and
+[Subhaditya Nath](https://github.com/subnut).
 
 Many thanks to authors of [vim-smooth-scroll], [comfortable-motion.vim], and
 [sexy_scroller.vim] for inspiration!
