@@ -46,6 +46,10 @@ endif
 " Execute {command}, but saving 'scroll' value before, and restoring it
 " afterwards.  Useful for some commands (such as ^D or ^U), which overwrite
 " 'scroll' permanently if used with a [count].
+"
+" Additionally, this function temporarily clears 'scrolloff' and resets it
+" after command execution. This is workaround for a bug described in
+" https://github.com/psliwka/vim-smoothie/issues/18
 function s:execute_preserving_scroll(command)
   let l:saved_scroll = &scroll
   let l:saved_scrolloff = 0
