@@ -58,6 +58,7 @@ popular smooth scrolling plugins I've used in the past: [sexy_scroller.vim],
 | Supports setting `[count]` before movement (f.ex. `3^F` to scroll down 3 pages) | ✅ | ✅ | ❌ | ❌ |
 | Respects `scroll` and `startofline` options | ✅ | ✅ | ❌ | ❌ |
 | `^D` and `^U` behave correctly near buffer ends, just moving the cursor instead of scrolling the window | ✅ | ✅ | ❌ | ❌ |
+| Terminal bell support | ✅ | ✅ | ❌ | ❌ |
 | Pun in name | ✅ | ✅ | ❌ | ❌ |
 
 Notes:
@@ -71,7 +72,6 @@ replaces. That is, every command should still behave exactly as described in
 `:help scroll.txt`. There are still some deviations from the origial behavior,
 which hopefully will be addressed in the future:
 
-* `^D`, `^U`, `^F`, `^B` should beep when they can't move any further.
 * `^F` and `^B` should respect the `window` option.
 * Native commands may move in a smarter way over wrapped/folded lines.
 
