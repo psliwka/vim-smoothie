@@ -200,7 +200,7 @@ endfunction
 " TODO: current algorithm is rather crude, would be good to research better
 " alternatives.
 function s:compute_velocity()
-  let l:absolute_speed = pow(abs(g:smoothie_base_speed * s:target_displacement - s:subline_position), g:smoothie_speed_exponentiation_factor)
+  let l:absolute_speed = pow(abs(g:smoothie_base_speed * (s:target_displacement - s:subline_position)), g:smoothie_speed_exponentiation_factor)
   if l:absolute_speed < g:smoothie_minimum_speed
     let l:absolute_speed = g:smoothie_minimum_speed
   endif
