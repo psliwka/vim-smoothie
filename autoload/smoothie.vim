@@ -34,6 +34,23 @@ if !exists('g:smoothie_base_speed')
   let g:smoothie_base_speed = 10
 endif
 
+if !exists('g:smoothie_minimum_speed')
+  ""
+  " Minimum scrolling speed (in lines per second) the animation will stay
+  " over. This hard limit ensures that the user will never have to wait too
+  " long for the animation to finish, regardless of the velocity curve and
+  " ease-out algorithm used.
+  let g:smoothie_minimum_speed = 10.0
+endif
+
+if !exists('g:smoothie_speed_exponentiation_factor')
+  ""
+  " This value controls exponent of the power function in the velocity curve.
+  " Generally should be less or equal to 1.0. Lower values produce longer but
+  " perceivably smoother animation.
+  let g:smoothie_speed_exponentiation_factor = 0.9
+endif
+
 if !exists('g:smoothie_break_on_reverse')
   ""
   " Stop immediately if we're moving and the user requested moving in opposite
@@ -183,7 +200,15 @@ endfunction
 " TODO: current algorithm is rather crude, would be good to research better
 " alternatives.
 function s:compute_velocity()
-  return g:smoothie_base_speed * (s:target_displacement - s:subline_position)
+  let l:absolute_speed = pow(abs(g:smoothie_base_speed * s:target_displacement - s:subline_position), g:smoothie_speed_exponentiation_factor)
+  if l:absolute_speed < g:smoothie_minimum_speed
+    let l:absolute_speed = g:smoothie_minimum_speed
+  endif
+  if s:target_displacement < 0
+    return -l:absolute_speed
+  else
+    return l:absolute_speed
+  endif
 endfunction
 
 ""
