@@ -26,21 +26,18 @@ if !exists('g:smoothie_update_interval')
   let g:smoothie_update_interval = 20
 endif
 
-if !exists('g:smoothie_base_speed')
+if !exists('g:smoothie_speed_constant_factor')
   ""
-  " Base scrolling speed (in lines per second), to be taken into account by
-  " the velocity calculation algorithm.  Can be decreased to achieve slower
-  " (and easier to follow) animation.
-  let g:smoothie_base_speed = 10
+  " This value controls constant term of the velocity curve. Increasing this
+  " boosts primarily cursor speed at the end of animation.
+  let g:smoothie_speed_constant_factor = 10
 endif
 
-if !exists('g:smoothie_minimum_speed')
+if !exists('g:smoothie_speed_linear_factor')
   ""
-  " Minimum scrolling speed (in lines per second) the animation will stay
-  " over. This hard limit ensures that the user will never have to wait too
-  " long for the animation to finish, regardless of the velocity curve and
-  " ease-out algorithm used.
-  let g:smoothie_minimum_speed = 10.0
+  " This value controls linear term of the velocity curve. Increasing this
+  " boosts primarily cursor speed at the beginning of animation.
+  let g:smoothie_speed_linear_factor = 10
 endif
 
 if !exists('g:smoothie_speed_exponentiation_factor')
@@ -200,10 +197,7 @@ endfunction
 " TODO: current algorithm is rather crude, would be good to research better
 " alternatives.
 function s:compute_velocity()
-  let l:absolute_speed = pow(abs(g:smoothie_base_speed * (s:target_displacement - s:subline_position)), g:smoothie_speed_exponentiation_factor)
-  if l:absolute_speed < g:smoothie_minimum_speed
-    let l:absolute_speed = g:smoothie_minimum_speed
-  endif
+  let l:absolute_speed = g:smoothie_speed_constant_factor + g:smoothie_speed_linear_factor * pow(abs(s:target_displacement - s:subline_position), g:smoothie_speed_exponentiation_factor)
   if s:target_displacement < 0
     return -l:absolute_speed
   else
