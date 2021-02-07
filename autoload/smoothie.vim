@@ -20,7 +20,7 @@ endif
 
 if !exists('g:smoothie_update_interval')
   ""
-  " Time (in milliseconds) between subseqent screen/cursor postion updates.
+  " Time (in milliseconds) between subsequent screen/cursor position updates.
   " Lower value produces smoother animation.  Might be useful to increase it
   " when running Vim over low-bandwidth/high-latency connections.
   let g:smoothie_update_interval = 20

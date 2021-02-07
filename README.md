@@ -37,7 +37,7 @@ Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
 
 There are many other Vim plugins attempting to resolve the same problem. The
-most intresting one is [sexy_scroller.vim], which covers way more movement
+most interesting one is [sexy_scroller.vim], which covers way more movement
 commands than vim-smoothie will ever do. Unfortunately, it also suffers from
 frequent visual artifacts, such as erratic screen jumps and animation
 jittering, impairing visual orientation and breaking the user experience. Many
@@ -69,7 +69,7 @@ Known issues/incompatibilities
 
 vim-smoothie strives to remain fully compatible with native commands it
 replaces. That is, every command should still behave exactly as described in
-`:help scroll.txt`. There are still some deviations from the origial behavior,
+`:help scroll.txt`. There are still some deviations from the original behavior,
 which hopefully will be addressed in the future:
 
 * `^F` and `^B` should respect the `window` option.
