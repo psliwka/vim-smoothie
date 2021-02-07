@@ -25,6 +25,9 @@ _vim-smoothie_ aims for sane defaults, and should work out-of-the-box for most
 users. In some cases, however, you might want to customize its behavior, by
 adjusting one or more of the following variables in your `vimrc`:
 
+* `g:smoothie_enabled`: Set it to `0` (or `v:false`) to disable vim-smoothie.
+  Useful for temporary disabling the plugin, f.ex. when running Vim over
+  extremely slow connections.
 * `g:smoothie_no_default_mappings`: If true, will prevent the plugin from
   overriding default scrolling keys (`Ctrl-D` and friends). You are then
   supposed to bind keys you like by yourself. See `plugin/smoothie.vim` to
