@@ -13,6 +13,9 @@ if has('nvim') || has('patch-8.2.1978')
   noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards()           <CR>
   noremap <silent> <Plug>(Smoothie_gg)       <cmd>call smoothie#cursor_movement('gg') <CR>
   noremap <silent> <Plug>(Smoothie_G)        <cmd>call smoothie#cursor_movement('G')  <CR>
+  noremap <silent> <Plug>(SmoothieTop)       <cmd>call smoothie#top()                 <CR>
+  noremap <silent> <Plug>(SmoothieMiddle)    <cmd>call smoothie#middle()              <CR>
+  noremap <silent> <Plug>(SmoothieBottom)    <cmd>call smoothie#bottom()              <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! map <unique> <C-D>      <Plug>(SmoothieDownwards)
@@ -23,6 +26,10 @@ if has('nvim') || has('patch-8.2.1978')
     silent! map <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! map <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! map <unique> <PageUp>   <Plug>(SmoothieBackwards)
+    silent! map <unique> zt         <Plug>(SmoothieTop)
+    silent! map <unique> zz         <Plug>(SmoothieMiddle)
+    silent! map <unique> z.         <Plug>(SmoothieMiddle)
+    silent! map <unique> zb         <Plug>(SmoothieBottom)
     if get(g:, 'smoothie_experimental_mappings', v:false)
       silent! map <unique> gg         <Plug>(Smoothie_gg)
       silent! map <unique> G          <Plug>(Smoothie_G)
@@ -35,6 +42,9 @@ else
   nnoremap <silent> <Plug>(SmoothieBackwards) :<C-U>call smoothie#backwards()           <CR>
   nnoremap <silent> <Plug>(Smoothie_gg)       :<C-U>call smoothie#cursor_movement('gg') <CR>
   nnoremap <silent> <Plug>(Smoothie_G)        :<C-U>call smoothie#cursor_movement('G')  <CR>
+  nnoremap <silent> <Plug>(SmoothieTop)        :<C-U>call smoothie#top()                 <CR>
+  nnoremap <silent> <Plug>(SmoothieMiddle)     :<C-U>call smoothie#middle()              <CR>
+  nnoremap <silent> <Plug>(SmoothieBottom)     :<C-U>call smoothie#bottom()              <CR>
 
   if !get(g:, 'smoothie_no_default_mappings', v:false)
     silent! nmap <unique> <C-D>      <Plug>(SmoothieDownwards)
@@ -45,6 +55,10 @@ else
     silent! nmap <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! nmap <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! nmap <unique> <PageUp>   <Plug>(SmoothieBackwards)
+    silent! map <unique> zt          <Plug>(SmoothieTop)
+    silent! map <unique> zz          <Plug>(SmoothieMiddle)
+    silent! map <unique> z.          <Plug>(SmoothieMiddle)
+    silent! map <unique> zb          <Plug>(SmoothieBottom)
     if get(g:, 'smoothie_experimental_mappings', v:false)
       silent! nmap <unique> gg         <Plug>(Smoothie_gg)
       silent! nmap <unique> G          <Plug>(Smoothie_G)

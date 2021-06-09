@@ -5,6 +5,12 @@
 let s:cursor_movement = v:false
 
 ""
+" This variable is used to inform the s:step_*() functions about whether the
+" current movement is a disjoint scroll (When the screen moves separately
+" from the cursor). Used for motions like zz, zt and zb
+let s:disjoint_scroll = v:false
+
+""
 " This variable is needed to let the s:step_down() function know whether to
 " continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
 "
@@ -87,6 +93,12 @@ function s:step_up()
       exe 'normal! k'
       return 0
     endif
+
+    if s:disjoint_scroll
+      exe "normal! \<C-y>"
+      return 0
+    endif
+
     call s:execute_preserving_scroll("normal! 1\<C-U>")
     return 0
   else
@@ -100,11 +112,18 @@ endfunction
 function s:step_down()
   let l:initial_winline = winline()
 
+  if s:disjoint_scroll
+    exe "normal! \<C-e>"
+    return 0
+  endif
+
   if line('.') < line('$')
+
     if s:cursor_movement
       exe 'normal! j'
       return 0
     endif
+
     " NOTE: the three lines of code following this comment block
     " have been implemented as a temporary workaround for a vim issue
     " regarding Ctrl-D and folds.
@@ -257,6 +276,15 @@ function s:update_target(lines)
 endfunction
 
 ""
+" Call update_target but execute a disjoint_scroll
+function s:disjoint_update_target(lines)
+  let s:disjoint_scroll = v:true
+  let s:ctrl_f_invoked = v:false
+  let s:cursor_movement = v:false
+  call s:update_target(a:lines)
+endfunction
+
+""
 " Helper function to calculate the actual number of screen lines from a line
 " to another.  Useful for properly handling folds in case of cursor movements.
 function s:calculate_screen_lines(from, to)
@@ -304,6 +332,12 @@ function s:ring_bell()
 endfunction
 
 ""
+" Helper function to get line number of top of the window
+function s:wintopline()
+  return winsaveview()['topline']
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   if !g:smoothie_enabled
@@ -311,6 +345,7 @@ function smoothie#downwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
+  let s:disjoint_scroll = v:false
   call s:count_to_scroll()
   call s:update_target(&scroll)
 endfunction
@@ -323,6 +358,7 @@ function smoothie#upwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
+  let s:disjoint_scroll = v:false
   call s:count_to_scroll()
   call s:update_target(-&scroll)
 endfunction
@@ -335,6 +371,7 @@ function smoothie#forwards()
     return
   endif
   let s:ctrl_f_invoked = v:true
+  let s:disjoint_scroll = v:false
   call s:update_target(winheight(0) * v:count1)
 endfunction
 
@@ -346,7 +383,23 @@ function smoothie#backwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
+  let s:disjoint_scroll = v:false
   call s:update_target(-winheight(0) * v:count1)
+endfunction
+
+
+function smoothie#middle()
+  let s:midline = (winheight(0) - 1)/2 + s:wintopline()
+  call s:disjoint_update_target(line('.') - s:midline)
+endfunction
+
+function smoothie#top()
+  call s:disjoint_update_target(line('.') - s:wintopline() - &scrolloff)
+endfunction
+
+function smoothie#bottom()
+  let s:bottomline = winheight(0) + s:wintopline()
+  call s:disjoint_update_target(line('.') - s:bottomline + 1 + &scrolloff)
 endfunction
 
 ""
