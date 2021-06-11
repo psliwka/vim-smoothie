@@ -278,10 +278,6 @@ endfunction
 ""
 " Call update_target but execute a disjoint_scroll
 function s:disjoint_update_target(lines)
-  let s:disjoint_scroll = v:true
-  let s:ctrl_f_invoked = v:false
-  let s:cursor_movement = v:false
-  call s:update_target(a:lines)
 endfunction
 
 ""
@@ -332,9 +328,15 @@ function s:ring_bell()
 endfunction
 
 ""
-" Helper function to get line number of top of the window
+" Helper function to get line number at top of the window
 function s:wintopline()
   return winsaveview()['topline']
+endfunction
+
+""
+" Helper function to get line number at bottom of the window
+function s:winbottomline()
+  return s:wintopline() + winheight(0) - 1
 endfunction
 
 ""
@@ -345,7 +347,6 @@ function smoothie#downwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
-  let s:disjoint_scroll = v:false
   call s:count_to_scroll()
   call s:update_target(&scroll)
 endfunction
@@ -358,7 +359,6 @@ function smoothie#upwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
-  let s:disjoint_scroll = v:false
   call s:count_to_scroll()
   call s:update_target(-&scroll)
 endfunction
@@ -371,7 +371,6 @@ function smoothie#forwards()
     return
   endif
   let s:ctrl_f_invoked = v:true
-  let s:disjoint_scroll = v:false
   call s:update_target(winheight(0) * v:count1)
 endfunction
 
@@ -383,7 +382,6 @@ function smoothie#backwards()
     return
   endif
   let s:ctrl_f_invoked = v:false
-  let s:disjoint_scroll = v:false
   call s:update_target(-winheight(0) * v:count1)
 endfunction
 
@@ -398,8 +396,15 @@ function smoothie#top()
 endfunction
 
 function smoothie#bottom()
-  let s:bottomline = winheight(0) + s:wintopline()
-  call s:disjoint_update_target(line('.') - s:bottomline + 1 + &scrolloff)
+  let s:lines = line('.') - s:winbottomline() - &scrolloff
+
+  let s:disjoint_scroll = v:true
+  let s:ctrl_f_invoked = v:false
+  call s:update_target(s:lines)
+  while !((winbottomline() - &scrolloff) == line('.') || s:wintopline() == 1)
+    exe 'sleep ' . g:smoothie_update_interval . ' m'
+  endwhile
+  let s:disjoint_scroll = v:false
 endfunction
 
 ""
