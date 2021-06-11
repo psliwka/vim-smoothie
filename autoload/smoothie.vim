@@ -335,8 +335,19 @@ endfunction
 
 ""
 " Helper function to get line number at bottom of the window
+" Takes into account folds
 function s:winbottomline()
-  return s:wintopline() + winheight(0) - 1
+  let l:bottomline = s:wintopline()
+  let l:i = 1
+  while i < winheight(0)
+    if foldclosed(l:bottomline) != -1
+      let l:bottomline += foldclosedend(l:bottomline) - foldclosed(l:bottomline)
+    endif
+
+    let l:bottomline += 1
+    let l:i += 1
+  endwhile
+  return l:bottomline
 endfunction
 
 ""
@@ -412,12 +423,11 @@ endfunction
 
 function smoothie#bottom()
   let s:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
-  echom 'Bottom line: '.(s:winbottomline() - &scrolloff)
-  " call s:perform_disjoint_scroll(s:lines)
+  call s:perform_disjoint_scroll(s:lines)
 endfunction
 
 function smoothie#fold(from, to)
-  return s:calculate_screen_lines(a:from, a:to)
+  return s:winbottomline()
 endfunction
 
 ""
