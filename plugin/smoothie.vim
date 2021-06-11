@@ -26,13 +26,13 @@ if has('nvim') || has('patch-8.2.1978')
     silent! map <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! map <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! map <unique> <PageUp>   <Plug>(SmoothieBackwards)
-    silent! map <unique> zt         <Plug>(SmoothieTop)
-    silent! map <unique> zz         <Plug>(SmoothieMiddle)
-    silent! map <unique> z.         <Plug>(SmoothieMiddle)
-    silent! map <unique> zb         <Plug>(SmoothieBottom)
     if get(g:, 'smoothie_experimental_mappings', v:false)
       silent! map <unique> gg         <Plug>(Smoothie_gg)
       silent! map <unique> G          <Plug>(Smoothie_G)
+      silent! map <unique> zt         <Plug>(SmoothieTop)
+      silent! map <unique> zz         <Plug>(SmoothieMiddle)
+      silent! map <unique> z.         <Plug>(SmoothieMiddle)
+      silent! map <unique> zb         <Plug>(SmoothieBottom)
     endif
   endif
 else
@@ -55,13 +55,13 @@ else
     silent! nmap <unique> <C-B>      <Plug>(SmoothieBackwards)
     silent! nmap <unique> <S-Up>     <Plug>(SmoothieBackwards)
     silent! nmap <unique> <PageUp>   <Plug>(SmoothieBackwards)
-    silent! map <unique> zt          <Plug>(SmoothieTop)
-    silent! map <unique> zz          <Plug>(SmoothieMiddle)
-    silent! map <unique> z.          <Plug>(SmoothieMiddle)
-    silent! map <unique> zb          <Plug>(SmoothieBottom)
     if get(g:, 'smoothie_experimental_mappings', v:false)
       silent! nmap <unique> gg         <Plug>(Smoothie_gg)
       silent! nmap <unique> G          <Plug>(Smoothie_G)
+      silent! map <unique> zt          <Plug>(SmoothieTop)
+      silent! map <unique> zz          <Plug>(SmoothieMiddle)
+      silent! map <unique> z.          <Plug>(SmoothieMiddle)
+      silent! map <unique> zb          <Plug>(SmoothieBottom)
     endif
   endif
 endif
