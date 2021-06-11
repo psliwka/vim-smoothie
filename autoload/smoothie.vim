@@ -364,6 +364,8 @@ endfunction
 
 ""
 " Helper function to perform a disjoint scroll
+" where the screen moves separatly from the 
+" cursor
 function s:perform_disjoint_scroll(lines)
   let s:disjoint_scroll = v:true
   let s:ctrl_f_invoked = v:false
@@ -422,25 +424,38 @@ function smoothie#backwards()
   call s:update_target(-winheight(0) * v:count1)
 endfunction
 
-
-function smoothie#middle()
-  echom s:winmidline()
-  let s:lines = s:calculate_screen_lines(s:winmidline(), line('.'))
-  call s:perform_disjoint_scroll(s:lines)
-endfunction
-
+""
+" Smooth equivalent to zt
 function smoothie#top()
-  let s:lines = s:calculate_screen_lines(s:wintopline() + &scrolloff, line('.'))
-  call s:perform_disjoint_scroll(s:lines)
+  if !g:smoothie_enabled
+    exe "normal! zt"
+    return
+  endif
+  let l:lines = s:calculate_screen_lines(s:wintopline() + &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(l:lines)
 endfunction
 
+""
+" Smooth equivalent to zz or z.
+function smoothie#middle()
+  if !g:smoothie_enabled
+    exe "normal! zz"
+    return
+  endif
+  echom s:winmidline()
+  let l:lines = s:calculate_screen_lines(s:winmidline(), line('.'))
+  call s:perform_disjoint_scroll(l:lines)
+endfunction
+
+""
+" Smooth equivalent to zb
 function smoothie#bottom()
-  let s:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
-  call s:perform_disjoint_scroll(s:lines)
-endfunction
-
-function smoothie#fold(from, to)
-  return s:winbottomline()
+  if !g:smoothie_enabled
+    exe "normal! zb"
+    return
+  endif
+  let l:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(l:lines)
 endfunction
 
 ""
