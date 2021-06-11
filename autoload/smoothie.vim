@@ -276,11 +276,6 @@ function s:update_target(lines)
 endfunction
 
 ""
-" Call update_target but execute a disjoint_scroll
-function s:disjoint_update_target(lines)
-endfunction
-
-""
 " Helper function to calculate the actual number of screen lines from a line
 " to another.  Useful for properly handling folds in case of cursor movements.
 function s:calculate_screen_lines(from, to)
@@ -331,6 +326,23 @@ endfunction
 " Helper function to get line number at top of the window
 function s:wintopline()
   return winsaveview()['topline']
+endfunction
+
+""
+" Helper function to get line number at the middle of the window
+" Takes into account folds
+function s:winmidline()
+  let l:midline = s:wintopline()
+  let l:i = 0
+  while i < (winheight(0) - 1)/2
+    if foldclosed(l:midline) != -1
+      let l:midline += foldclosedend(l:midline) - foldclosed(l:midline)
+    endif
+
+    let l:midline += 1
+    let l:i += 1
+  endwhile
+  return l:midline
 endfunction
 
 ""
@@ -412,8 +424,9 @@ endfunction
 
 
 function smoothie#middle()
-  " let s:midline = (winheight(0) - 1)/2 + s:wintopline()
-  " call s:disjoint_update_target(line('.') - s:midline)
+  echom s:winmidline()
+  let s:lines = s:calculate_screen_lines(s:winmidline(), line('.'))
+  call s:perform_disjoint_scroll(s:lines)
 endfunction
 
 function smoothie#top()
