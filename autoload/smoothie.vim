@@ -340,6 +340,20 @@ function s:winbottomline()
 endfunction
 
 ""
+" Helper function to perform a disjoint scroll
+function s:perform_disjoint_scroll(lines)
+  let s:disjoint_scroll = v:true
+  let s:ctrl_f_invoked = v:false
+  call s:update_target(a:lines)
+
+  " Wait until movement has stopped
+  while s:target_displacement != 0
+    exe 'sleep ' . g:smoothie_update_interval . ' m'
+  endwhile
+  let s:disjoint_scroll = v:false
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   if !g:smoothie_enabled
@@ -387,25 +401,19 @@ endfunction
 
 
 function smoothie#middle()
-  let s:midline = (winheight(0) - 1)/2 + s:wintopline()
-  call s:disjoint_update_target(line('.') - s:midline)
+  " let s:midline = (winheight(0) - 1)/2 + s:wintopline()
+  " call s:disjoint_update_target(line('.') - s:midline)
 endfunction
 
 function smoothie#top()
-  call s:disjoint_update_target(line('.') - s:wintopline() - &scrolloff)
+  " call s:disjoint_update_target(line('.') - s:wintopline() - &scrolloff)
 endfunction
 
 function smoothie#bottom()
-  let s:lines = line('.') - s:winbottomline() - &scrolloff
-
-  let s:disjoint_scroll = v:true
-  let s:ctrl_f_invoked = v:false
-  call s:update_target(s:lines)
-  while !((winbottomline() - &scrolloff) == line('.') || s:wintopline() == 1)
-    exe 'sleep ' . g:smoothie_update_interval . ' m'
-  endwhile
-  let s:disjoint_scroll = v:false
+  let s:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(s:lines)
 endfunction
+
 
 ""
 " Smoothie equivalent for G and gg
