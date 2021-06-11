@@ -406,14 +406,19 @@ function smoothie#middle()
 endfunction
 
 function smoothie#top()
-  " call s:disjoint_update_target(line('.') - s:wintopline() - &scrolloff)
+  let s:lines = s:calculate_screen_lines(s:wintopline() + &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(s:lines)
 endfunction
 
 function smoothie#bottom()
   let s:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
-  call s:perform_disjoint_scroll(s:lines)
+  echom 'Bottom line: '.(s:winbottomline() - &scrolloff)
+  " call s:perform_disjoint_scroll(s:lines)
 endfunction
 
+function smoothie#fold(from, to)
+  return s:calculate_screen_lines(a:from, a:to)
+endfunction
 
 ""
 " Smoothie equivalent for G and gg
