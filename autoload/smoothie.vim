@@ -5,6 +5,12 @@
 let s:cursor_movement = v:false
 
 ""
+" This variable is used to inform the s:step_*() functions about whether the
+" current movement is a disjoint scroll (When the screen moves separately
+" from the cursor). Used for motions like zz, zt and zb
+let s:disjoint_scroll = v:false
+
+""
 " This variable is needed to let the s:step_down() function know whether to
 " continue scrolling after reaching EOL (as in ^F) or not (^B, ^D, ^U, etc.)
 "
@@ -87,6 +93,12 @@ function s:step_up()
       exe 'normal! k'
       return 0
     endif
+
+    if s:disjoint_scroll
+      exe "normal! \<C-y>"
+      return 0
+    endif
+
     call s:execute_preserving_scroll("normal! 1\<C-U>")
     return 0
   else
@@ -100,11 +112,18 @@ endfunction
 function s:step_down()
   let l:initial_winline = winline()
 
+  if s:disjoint_scroll
+    exe "normal! \<C-e>"
+    return 0
+  endif
+
   if line('.') < line('$')
+
     if s:cursor_movement
       exe 'normal! j'
       return 0
     endif
+
     " NOTE: the three lines of code following this comment block
     " have been implemented as a temporary workaround for a vim issue
     " regarding Ctrl-D and folds.
@@ -304,6 +323,62 @@ function s:ring_bell()
 endfunction
 
 ""
+" Helper function to get line number at top of the window
+function s:wintopline()
+  return winsaveview()['topline']
+endfunction
+
+""
+" Helper function to get line number at the middle of the window
+" Takes into account folds
+function s:winmidline()
+  let l:midline = s:wintopline()
+  let l:i = 0
+  while i < (winheight(0) - 1)/2
+    if foldclosed(l:midline) != -1
+      let l:midline += foldclosedend(l:midline) - foldclosed(l:midline)
+    endif
+
+    let l:midline += 1
+    let l:i += 1
+  endwhile
+  return l:midline
+endfunction
+
+""
+" Helper function to get line number at bottom of the window
+" Takes into account folds
+function s:winbottomline()
+  let l:bottomline = s:wintopline()
+  let l:i = 1
+  while i < winheight(0)
+    if foldclosed(l:bottomline) != -1
+      let l:bottomline += foldclosedend(l:bottomline) - foldclosed(l:bottomline)
+    endif
+
+    let l:bottomline += 1
+    let l:i += 1
+  endwhile
+  return l:bottomline
+endfunction
+
+""
+" Helper function to perform a disjoint scroll
+" where the screen moves separatly from the 
+" cursor
+function s:perform_disjoint_scroll(lines)
+  let s:disjoint_scroll = v:true
+  let s:ctrl_f_invoked = v:false
+  call s:update_target(a:lines)
+
+  " Wait until movement has stopped
+  while s:target_displacement != 0
+    exe 'sleep ' . g:smoothie_update_interval . ' m'
+  endwhile
+  let s:disjoint_scroll = v:false
+endfunction
+
+""
 " Smooth equivalent to ^D.
 function smoothie#downwards()
   if !g:smoothie_enabled
@@ -347,6 +422,40 @@ function smoothie#backwards()
   endif
   let s:ctrl_f_invoked = v:false
   call s:update_target(-winheight(0) * v:count1)
+endfunction
+
+""
+" Smooth equivalent to zt
+function smoothie#top()
+  if !g:smoothie_enabled
+    exe "normal! zt"
+    return
+  endif
+  let l:lines = s:calculate_screen_lines(s:wintopline() + &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(l:lines)
+endfunction
+
+""
+" Smooth equivalent to zz or z.
+function smoothie#middle()
+  if !g:smoothie_enabled
+    exe "normal! zz"
+    return
+  endif
+  echom s:winmidline()
+  let l:lines = s:calculate_screen_lines(s:winmidline(), line('.'))
+  call s:perform_disjoint_scroll(l:lines)
+endfunction
+
+""
+" Smooth equivalent to zb
+function smoothie#bottom()
+  if !g:smoothie_enabled
+    exe "normal! zb"
+    return
+  endif
+  let l:lines = s:calculate_screen_lines(s:winbottomline() - &scrolloff, line('.'))
+  call s:perform_disjoint_scroll(l:lines)
 endfunction
 
 ""
