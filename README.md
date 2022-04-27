@@ -7,14 +7,21 @@ give _vim-smoothie_ a try!
 
 ![scrolling demo](demo.gif)
 
+Requirements
+------------
+
+You will need reasonably new Vim or Neovim. Vim 8.2.1978+ or Neovim 0.3+ should
+do the trick.
+
+Additionally, since this plugins due to its nature causes frequent screen
+redraws, it is recommended to use a fast terminal emulator, ideally with GPU
+acceleration. I personally recommend [kitty].
+
 Installation
 ------------
 
-You will need reasonably new Vim or Neovim with timers support. Vim 8+ or
-Neovim 0.3+ should do the trick.
-
 Install the plugin using your favorite plugin manager, for example [vim-plug]:
-```
+```vim
 Plug 'psliwka/vim-smoothie'
 ```
 
@@ -30,8 +37,16 @@ adjusting one or more of the following variables in your `vimrc`:
   extremely slow connections.
 * `g:smoothie_no_default_mappings`: If true, will prevent the plugin from
   overriding default scrolling keys (`Ctrl-D` and friends). You are then
-  supposed to bind keys you like by yourself. See `plugin/smoothie.vim` to
-  discover available mappings.
+  supposed to bind keys you like by yourself. Example mapping:
+  ```vim
+  nnoremap <unique> <C-D> <cmd>call smoothie#do("<C-D>") <CR>
+  vnoremap <unique> <C-D> <cmd>call smoothie#do("<C-D>") <CR>
+  ```
+* `g:smoothie_remapped_commands`: Instead of disabling all mappings with
+  `g:smoothie_no_default_mappings`, you can disable them selectively by
+  overriding this list with a subset of commands that you'd like to map.
+  Alternatively, you can add extra commands here if you fell extra adventurous
+  ;)
 * `g:smoothie_experimental_mappings`: Set this to true to enable additional,
   experimental mappings (currently `gg` and `G`). It is not recommended to
   enable them unless you're ready to fight potential bugs.
@@ -54,7 +69,7 @@ popular smooth scrolling plugins I've used in the past: [sexy_scroller.vim],
 
 |  | vim-smoothie | [sexy_scroller.vim] | [comfortable-motion.vim] | [vim-smooth-scroll] |
 |---|:---:|:---:|:---:|:---:|
-| Supported commands | `^D` `^U` `^F` `^B` `gg`<sup>1</sup> `G`<sup>1</sup> | A lot❤️ | `^D` `^U` `^F` `^B` | `^D` `^U` `^F` `^B` |
+| Supported commands | All window scrolling commands (`^D` `^U` `^F` `^B` `zz` `zt` `zb` etc.), `gg`<sup>1</sup> `G`<sup>1</sup> | Almost all window and cursor movement commands ❤️ | `^D` `^U` `^F` `^B` | `^D` `^U` `^F` `^B` |
 | Erratic screen jumps and jittering now and then | Nope | A lot💔 | Nope | Nope |
 | Scrolling distance is proportional to window height | ✅ | ✅ | ❌ | ✅ |
 | Easing out (soft-stop) | ✅ | ✅ | ✅ | ❌ |
@@ -66,18 +81,6 @@ popular smooth scrolling plugins I've used in the past: [sexy_scroller.vim],
 
 Notes:
 1. these commands are experimental and disabled by default
-
-Known issues/incompatibilities
-------------------------------
-
-vim-smoothie strives to remain fully compatible with native commands it
-replaces. That is, every command should still behave exactly as described in
-`:help scroll.txt`. There are still some deviations from the original behavior,
-which hopefully will be addressed in the future:
-
-* `^F` and `^B` should respect the `window` option.
-* Native commands may move in a smarter way over wrapped/folded lines.
-
 
 Credits
 -------
@@ -98,3 +101,4 @@ License
 [vim-smooth-scroll]: https://github.com/terryma/vim-smooth-scroll
 [comfortable-motion.vim]: https://github.com/yuttie/comfortable-motion.vim
 [sexy_scroller.vim]: https://github.com/joeytwiddle/sexy_scroller.vim
+[kitty]: https://github.com/kovidgoyal/kitty
