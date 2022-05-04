@@ -42,6 +42,8 @@ adjusting one or more of the following variables in your `vimrc`:
   nnoremap <unique> <C-D> <cmd>call smoothie#do("\<C-D>") <CR>
   vnoremap <unique> <C-D> <cmd>call smoothie#do("\<C-D>") <CR>
   ```
+  Note that the same key is mapped twice (with `nnoremap` and `vnoremap`) to
+  make the binding work in Visual mode too.
 * `g:smoothie_remapped_commands`: Instead of disabling all mappings with
   `g:smoothie_no_default_mappings`, you can disable them selectively by
   overriding this list with a subset of commands that you'd like to map.
