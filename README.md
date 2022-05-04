@@ -39,8 +39,8 @@ adjusting one or more of the following variables in your `vimrc`:
   overriding default scrolling keys (`Ctrl-D` and friends). You are then
   supposed to bind keys you like by yourself. Example mapping:
   ```vim
-  nnoremap <unique> <C-D> <cmd>call smoothie#do("<C-D>") <CR>
-  vnoremap <unique> <C-D> <cmd>call smoothie#do("<C-D>") <CR>
+  nnoremap <unique> <C-D> <cmd>call smoothie#do("\<C-D>") <CR>
+  vnoremap <unique> <C-D> <cmd>call smoothie#do("\<C-D>") <CR>
   ```
 * `g:smoothie_remapped_commands`: Instead of disabling all mappings with
   `g:smoothie_no_default_mappings`, you can disable them selectively by

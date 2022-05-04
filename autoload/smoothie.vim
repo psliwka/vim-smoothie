@@ -181,16 +181,16 @@ endfunction
 ""
 " Old interface kept for backward compatibility with legacy configurations
 function smoothie#downwards()
-  call smoothie#do('<C-D>')
+  call smoothie#do("\<C-D>")
 endfunction
 function smoothie#upwards()
-  call smoothie#do('<C-U>')
+  call smoothie#do("\<C-U>")
 endfunction
 function smoothie#forwards()
-  call smoothie#do('<C-F>')
+  call smoothie#do("\<C-F>")
 endfunction
 function smoothie#backwards()
-  call smoothie#do('<C-B>')
+  call smoothie#do("\<C-B>")
 endfunction
 
 " vim: et ts=2
