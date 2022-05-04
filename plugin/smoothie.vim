@@ -46,7 +46,7 @@ if !exists('g:smoothie_remapped_commands')
   ""
   " List of commands which smoothened alternatives will be mapped for
   if !g:smoothie_no_default_mappings
-    let g:smoothie_remapped_commands = ['<C-D>', '<C-U>', '<C-F>', '<S-Down>', '<PageDown>', '<C-B>', '<S-Up>', '<PageUp>', 'z+', 'z^', 'zt', 'z.', 'zz', 'z-', 'zb']
+    let g:smoothie_remapped_commands = ['<C-D>', '<C-U>', '<C-F>', '<S-Down>', '<PageDown>', '<C-B>', '<S-Up>', '<PageUp>', 'z+', 'z^', 'zt', 'z<CR>', 'z.', 'zz', 'z-', 'zb']
     if g:smoothie_experimental_mappings
       let g:smoothie_remapped_commands += ['gg', 'G']
     endif
