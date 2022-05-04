@@ -1,3 +1,15 @@
+function s:editor_supports_fast_redraw()
+  " Currently enabled only for Neovim, because it causes screen flickering on
+  " regular Vim.
+  return has('nvim')
+endfunction
+
+function s:terminal_supports_fast_redraw()
+  " Currently only Kitty is known not to cause any flickering when calling
+  " `:mode`.
+  return $TERM == 'xterm-kitty'
+endfunction
+
 ""
 " Note: the configuration options mentioned there are intentionally hidden
 " from the user, since they're not guaranteed to be backward-compatible with
@@ -33,6 +45,15 @@ if !exists('g:smoothie_speed_exponentiation_factor')
   let g:smoothie_speed_exponentiation_factor = 0.9
 endif
 
+if !exists('g:smoothie_redraw_at_finish')
+  ""
+  " Force screen redraw when the animation is finished, which clears sporadic
+  " display artifacts which I encountered f.ex. when scrolling through buffers
+  " containing emoji. Enabled by default only if both editor and terminal
+  " supports doing this in a glitch-free way.
+  let g:smoothie_redraw_at_finish = s:editor_supports_fast_redraw() && s:terminal_supports_fast_redraw()
+endif
+
 let s:target_view = {}
 
 let s:subline_progress_view = {}
@@ -63,11 +84,7 @@ endfunction
 " and disable the animation timer to conserve power.
 function s:finish_moving()
   call winrestview(s:target_view)
-  " XXX `mode` here forces window redraw, which clears sporadic display
-  " artifacts which I encountered f.ex. when scrolling through buffers
-  " containing emoji. It is enabled only for Neovim, because it causes screen
-  " flickering on regular Vim.
-  if has('nvim')
+  if g:smoothie_redraw_at_finish
     mode
   endif
   let s:target_view = {}
