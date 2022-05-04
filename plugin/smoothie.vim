@@ -59,7 +59,7 @@ endif
 " Add mappings to override commands which should be smoothened
 for remapped_command in g:smoothie_remapped_commands
   for mapping_command in ['nnoremap', 'vnoremap']
-    execute 'silent! ' . mapping_command . ' <unique> ' . remapped_command . ' <cmd>call smoothie#do("' . remapped_command . '") <CR>'
+    execute 'silent! ' . mapping_command . ' <unique> ' . remapped_command . ' <cmd>call smoothie#do("' . substitute(remapped_command, '<', '\\<lt>', '') . '") <CR>'
   endfor
 endfor
 
