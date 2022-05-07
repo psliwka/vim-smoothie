@@ -181,7 +181,7 @@ function s:update_target(command)
   if !empty(s:target_view)
     call winrestview(s:target_view)
   endif
-  execute 'normal! ' . v:count . a:command
+  execute 'normal! ' . v:count1 . a:command
   let s:target_view = winsaveview()
   call winrestview(l:current_view)
 endfunction
@@ -191,7 +191,7 @@ function smoothie#do(command)
     call s:update_target(a:command)
     call s:start_moving()
   else
-    execute 'normal! ' . v:count . a:command
+    execute 'normal! ' . v:count1 . a:command
   endif
 endfunction
 
