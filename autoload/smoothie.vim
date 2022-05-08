@@ -1,3 +1,7 @@
+
+let smoothie#default_commands = ['<C-D>', '<C-U>', '<C-F>', '<S-Down>', '<PageDown>', '<C-B>', '<S-Up>', '<PageUp>', 'z+', 'z^', 'zt', 'z<CR>', 'z.', 'zz', 'z-', 'zb']
+let smoothie#experimental_commands = ['gg', 'G', 'n', 'N', '#', '*', 'g*', 'g#']
+
 function s:editor_supports_fast_redraw()
   " Currently enabled only for Neovim, because it causes screen flickering on
   " regular Vim.
