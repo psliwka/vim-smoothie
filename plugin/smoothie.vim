@@ -48,7 +48,7 @@ if !exists('g:smoothie_remapped_commands')
   if !g:smoothie_no_default_mappings
     let g:smoothie_remapped_commands = ['<C-D>', '<C-U>', '<C-F>', '<S-Down>', '<PageDown>', '<C-B>', '<S-Up>', '<PageUp>', 'z+', 'z^', 'zt', 'z<CR>', 'z.', 'zz', 'z-', 'zb']
     if g:smoothie_experimental_mappings
-      let g:smoothie_remapped_commands += ['gg', 'G']
+      let g:smoothie_remapped_commands += ['gg', 'G', 'n', 'N', '#', '*', 'g*', 'g#']
     endif
   else
     let g:smoothie_remapped_commands = []
@@ -58,8 +58,9 @@ endif
 ""
 " Add mappings to override commands which should be smoothened
 for remapped_command in g:smoothie_remapped_commands
+  let s:hlsearch = ''
   for mapping_command in ['nnoremap', 'vnoremap']
-    execute 'silent! ' . mapping_command . ' <unique> ' . remapped_command . ' <cmd>call smoothie#do("' . substitute(remapped_command, '<', '\\<lt>', '') . '") <CR>'
+    execute 'silent! ' . mapping_command . ' <unique> ' . remapped_command . ' <cmd>let [v:hlsearch, @/, v:searchforward]=smoothie#do("' . substitute(remapped_command, '<', '\\<lt>', '') . '")<CR>'
   endfor
 endfor
 

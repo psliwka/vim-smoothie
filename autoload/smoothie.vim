@@ -181,18 +181,29 @@ function s:update_target(command)
   if !empty(s:target_view)
     call winrestview(s:target_view)
   endif
-  execute 'normal! ' . v:count1 . a:command
+  if v:count == 0
+    execute 'normal! ' . a:command
+  else
+    execute 'normal! ' . v:count . a:command
+  endif
   let s:target_view = winsaveview()
   call winrestview(l:current_view)
+  return [v:hlsearch, @/, v:searchforward]
 endfunction
 
 function smoothie#do(command)
   if g:smoothie_enabled
-    call s:update_target(a:command)
+    let l:search = s:update_target(a:command)
     call s:start_moving()
   else
-    execute 'normal! ' . v:count1 . a:command
+    if v:count == 0
+      execute 'normal! ' . a:command
+    else
+      execute 'normal! ' . v:count . a:command
+    endif
+    let l:search = [v:hlsearch, @/, v:searchforward]
   endif
+  return l:search
 endfunction
 
 ""
