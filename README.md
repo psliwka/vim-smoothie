@@ -53,6 +53,9 @@ adjusting one or more of the following variables in your `vimrc`:
   experimental mappings (currently `gg` and `G`). It is not recommended to
   enable them unless you're ready to fight potential bugs.
 
+The plugin also respects native Vim settings affecting scrolling behavior, such
+as `scrolloff`, `belloff`, `startofline`, etc.
+
 Alternatives, a.k.a. why create yet another plugin
 --------------------------------------------------
 
