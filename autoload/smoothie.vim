@@ -143,6 +143,43 @@ function s:filter_dict(source, persisted_keys)
   return result
 endfunction
 
+""
+" Equivalent to winrestview(), but tries to avoid actually calling
+" winrestview() and tries to restore the view using normal mode commands if
+" possible.  This improves redraw smoothness and minimises glitches,
+" especially on slow terminals.
+function s:winrestview_optimized(new_view)
+  for key in ["topline", "lnum"]
+    let l:distance = a:new_view[key] - winsaveview()[key]
+    if l:distance == 0
+      continue
+    endif
+    if key == "topline"
+      if l:distance > 0
+        execute "normal! " . l:distance . "\<C-E>"
+      else
+        execute "normal! " . -l:distance . "\<C-Y>"
+      endif
+    elseif key == "lnum"
+      if l:distance > 0
+        execute "normal! " . l:distance . "j"
+      else
+        execute "normal! " . -l:distance . "k"
+      endif
+    endif
+  endfor
+  let l:view_after_optimization = s:filter_dict(winsaveview(), keys(a:new_view))
+  let l:remaining_view_changes = {}
+  for [key, value] in items(view_after_optimization)
+    if a:new_view[key] != value
+      let l:remaining_view_changes[key] = a:new_view[key]
+    endif
+  endfor
+  if !empty(l:remaining_view_changes)
+    call winrestview(l:remaining_view_changes)
+  endif
+endfunction
+
 function s:perform_animation_step(step_duration)
   let l:target_distance = s:compute_target_distance()
   let l:new_position = s:filter_dict(winsaveview(), s:animated_view_elements)
@@ -160,7 +197,7 @@ function s:perform_animation_step(step_duration)
     endif
     let s:subline_progress_view[key] += value - l:integer_step_size
   endfor
-  call winrestview(l:new_position)
+  call s:winrestview_optimized(l:new_position)
   return l:finished_moving
 endfunction
 
