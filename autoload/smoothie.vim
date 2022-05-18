@@ -1,3 +1,7 @@
+
+let smoothie#default_commands = ['<C-D>', '<C-U>', '<C-F>', '<S-Down>', '<PageDown>', '<C-B>', '<S-Up>', '<PageUp>', 'z+', 'z^', 'zt', 'z<CR>', 'z.', 'zz', 'z-', 'zb']
+let smoothie#experimental_commands = ['gg', 'G', 'n', 'N', '#', '*', 'g*', 'g#']
+
 function s:editor_supports_fast_redraw()
   " Currently enabled only for Neovim, because it causes screen flickering on
   " regular Vim.
@@ -218,18 +222,28 @@ function s:update_target(command)
   if !empty(s:target_view)
     call winrestview(s:target_view)
   endif
-  execute 'normal! ' . v:count . a:command
+  execute 'normal! ' . (v:count ? v:count : '') . a:command
   let s:target_view = winsaveview()
   call winrestview(l:current_view)
+  return [v:hlsearch, @/, v:searchforward]
 endfunction
 
 function smoothie#do(command)
-  if g:smoothie_enabled
-    call s:update_target(a:command)
-    call s:start_moving()
-  else
-    execute 'normal! ' . v:count . a:command
-  endif
+  let l:search = [v:hlsearch, @/, v:searchforward]
+  try
+    if g:smoothie_enabled
+      let l:search = s:update_target(a:command)
+      call s:start_moving()
+    else
+      execute 'normal! ' . (v:count ? v:count : '') . a:command
+      let l:search = [v:hlsearch, @/, v:searchforward]
+    endif
+  catch
+      echoh ErrorMsg
+      echom substitute(v:exception, '^[^:]*:', '', '')
+      echoh None
+  endtry
+  return l:search
 endfunction
 
 ""
