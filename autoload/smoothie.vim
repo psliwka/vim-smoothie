@@ -96,6 +96,20 @@ function! s:finish_moving() abort
 endfunction
 
 ""
+" Skip animation and jump to target position immediately if we're moving and
+" the user is about to leave the window or switch to a different buffer.
+function! s:handle_leave_event() abort
+  if !empty(s:target_view)
+    call s:finish_moving()
+  endif
+endfunction
+
+augroup smoothie_leave_handlers
+  autocmd!
+  autocmd WinLeave,BufLeave * call s:handle_leave_event()
+augroup end
+
+""
 " TODO: current algorithm is rather crude, would be good to research better
 " alternatives.
 function! s:compute_velocity_element(target_distance_element) abort
