@@ -65,9 +65,9 @@ endfor
 
 ""
 " Old mappings kept for backward compatibility with legacy configurations
-noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards()           <CR>
-noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()             <CR>
-noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()            <CR>
-noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards()           <CR>
+noremap <silent> <Plug>(SmoothieDownwards) <cmd>call smoothie#downwards() <CR>
+noremap <silent> <Plug>(SmoothieUpwards)   <cmd>call smoothie#upwards()   <CR>
+noremap <silent> <Plug>(SmoothieForwards)  <cmd>call smoothie#forwards()  <CR>
+noremap <silent> <Plug>(SmoothieBackwards) <cmd>call smoothie#backwards() <CR>
 
 " vim: et ts=2
