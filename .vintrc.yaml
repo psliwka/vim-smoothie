@@ -1,0 +1,3 @@
+cmdargs:
+  # Checking more strictly
+  severity: style_problem
