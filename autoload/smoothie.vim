@@ -194,6 +194,19 @@ function! s:winrestview_optimized(new_view) abort
   endif
 endfunction
 
+""
+" Stop moving and jump to target immediately if we detect the animation is
+" stuck. This is a workaround to partially mitigate
+" https://github.com/psliwka/vim-smoothie/issues/40
+function! s:abort_if_stuck(desired_new_position)
+  let l:current_position = s:filter_dict(winsaveview(), s:animated_view_elements)
+  for key in s:animated_view_elements
+    if l:current_position[key] != a:desired_new_position[key]
+      call s:finish_moving()
+    endif
+  endfor
+endfunction
+
 function! s:perform_animation_step(step_duration) abort
   let l:target_distance = s:compute_target_distance()
   let l:new_position = s:filter_dict(winsaveview(), s:animated_view_elements)
@@ -212,6 +225,7 @@ function! s:perform_animation_step(step_duration) abort
     let s:subline_progress_view[key] += value - l:integer_step_size
   endfor
   call s:winrestview_optimized(l:new_position)
+  call s:abort_if_stuck(l:new_position)
   return l:finished_moving
 endfunction
 
