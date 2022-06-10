@@ -198,7 +198,7 @@ endfunction
 " Stop moving and jump to target immediately if we detect the animation is
 " stuck. This is a workaround to partially mitigate
 " https://github.com/psliwka/vim-smoothie/issues/40
-function! s:abort_if_stuck(desired_new_position)
+function! s:abort_if_stuck(desired_new_position) abort
   let l:current_position = s:filter_dict(winsaveview(), s:animated_view_elements)
   for key in s:animated_view_elements
     if l:current_position[key] != a:desired_new_position[key]
